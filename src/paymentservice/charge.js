@@ -13,14 +13,17 @@
 // limitations under the License.
 
 const cardValidator = require('simple-card-validator');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const pino = require('pino');
 
 const logger = pino({
   name: 'paymentservice-charge',
   messageKey: 'message',
-  changeLevelName: 'severity',
-  useLevelLabels: true
+  formatters: {
+    level (logLevelString, logLevelNum) {
+      return { severity: logLevelString }
+    }
+  }
 });
 
 
@@ -79,5 +82,5 @@ module.exports = function charge (request) {
   logger.info(`Transaction processed: ${cardType} ending ${cardNumber.substr(-4)} \
     Amount: ${amount.currency_code}${amount.units}.${amount.nanos}`);
 
-  return { transaction_id: uuid() };
+  return { transaction_id: uuidv4() };
 };
